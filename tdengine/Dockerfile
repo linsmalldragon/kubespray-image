@@ -1,1 +1,1 @@
-FROM --platform=linux/arm64 tdengine/tdengine:3.2.3.0-arm
+FROM --platform=linux/arm64 tdengine/tdengine:3.2.3.0
