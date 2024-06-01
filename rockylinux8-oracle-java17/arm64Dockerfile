@@ -1,0 +1,11 @@
+FROM rockylinux:8.9
+MAINTAINER linxiaolong linsmalldragon@qq.com
+ENV LANG=C.UTF-8 \
+    TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+&& echo $TZ > /etc/timezone
+ADD jdk-17.0.10_linux-aarch64_bin.rpm /tmp
+RUN rpm -ivh /tmp/jdk-17.0.10_linux-aarch64_bin.rpm
+RUN java -version
+RUN rm -rf /tmp/jdk-17.0.10_linux-aarch64_bin.rpm
+RUN yum install fontconfig dejavu-sans-fonts -y
