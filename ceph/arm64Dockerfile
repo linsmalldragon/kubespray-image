@@ -1,0 +1,41 @@
+FROM rook/ceph:master
+ENV LANG=zh_CN.UTF-8 \
+    TZ=Asia/Shanghai
+
+USER root
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+&& echo $TZ > /etc/timezone
+
+RUN cd /etc/yum.repos.d/ && \
+    mkdir -p /etc/yum.repos.d/backup && \
+    mv *.repo backup/ 2>/dev/null || true && \
+    cat > /etc/yum.repos.d/CentOS-Base.repo << 'EOF'
+[baseos]
+name=CentOS Stream $releasever - BaseOS
+baseurl=https://mirrors.aliyun.com/centos-stream/$releasever-stream/BaseOS/$basearch/os/
+gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+
+[appstream]
+name=CentOS Stream $releasever - AppStream
+baseurl=https://mirrors.aliyun.com/centos-stream/$releasever-stream/AppStream/$basearch/os/
+gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+
+[extras]
+name=CentOS Stream $releasever - Extras
+baseurl=https://mirrors.aliyun.com/centos-stream/$releasever-stream/extras/$basearch/os/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+EOF
+
+RUN sed -i 's/\$releasever/9/g' /etc/yum.repos.d/CentOS-Base.repo && \
+    yum clean all && \
+    yum install nano -y && \
+    yum groupinstall fonts -y && \
+    echo 'set encoding=utf-8' > $HOME/.virc && \
+    source $HOME/.virc && \
+    mkdir -p /cephfs
